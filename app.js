@@ -5,12 +5,13 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var expressHbs = require('express-handlebars'); 
 var mongoose = require('mongoose');
+var session = require('express-session');
 
 var indexRouter = require('./routes/index');
 
 var app = express();
 
-mongoose.connect('localhost:27017/shopping');
+mongoose.connect('mongodb://localhost:27017/shopping');
 
 
 
@@ -22,6 +23,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+//Adding session and enabling them with configuration.
+
+//resave - by default it is true, that it everytime a request is made, the session is saved 
+//on the server.
+
+//below line sets up the session.
+app.use(session({secret: 'mysupersecret', resave: false, saveUninitialized: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);

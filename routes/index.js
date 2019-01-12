@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var Product = require('../models/product');
 var csrf = require('csurf');
+var passport = require('passport');
+
+var Product = require('../models/product');
 
 var csrfProtection = csrf();
 //adding csrf protection to the route.
@@ -21,11 +23,20 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/user/signup', function(req, res, next) {
-  res.render('user/signup', {csrfToken: req.csrfToken()}); 
+  //if possible error messages are present, get them.
+  var messages = req.flash('error');
+  res.render('user/signup', {csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0}); 
 });
 
-router.post('/user/signup', function(req, res, next) {
-  res.redirect('/');
+router.post('/user/signup', passport.authenticate('local.signup', {
+  successRedirect: '/user/profile',
+  failureRedirect: '/user/signup',
+  //displays 'email already exists' message using connect-flash package.
+  failureFlash: true
+}));
+
+router.get('/user/profile', function(req, res, next) {
+  res.render('user/profile'); 
 });
 
 

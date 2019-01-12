@@ -1,2 +1,5 @@
 1. Cross Site Request Forgery (csrf) - csurf
 2. Session - express-session
+3. User authentication - passport
+4. To encrypt password - bcrypt-nodejs (refer passport strategies for other login like fb, OAuth)
+5. Flash messages - connect-flash

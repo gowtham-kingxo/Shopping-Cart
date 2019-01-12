@@ -6,12 +6,16 @@ var logger = require('morgan');
 var expressHbs = require('express-handlebars'); 
 var mongoose = require('mongoose');
 var session = require('express-session');
+var passport = require('passport');
+var flash = require('connect-flash');
+var validator = require('express-validator');
 
 var indexRouter = require('./routes/index');
 
 var app = express();
 
 mongoose.connect('mongodb://localhost:27017/shopping');
+require('./config/passport');
 
 
 
@@ -22,6 +26,8 @@ app.set('view engine', '.hbs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+//order important for validator
+app.use(validator());
 app.use(cookieParser());
 
 //Adding session and enabling them with configuration.
@@ -31,6 +37,12 @@ app.use(cookieParser());
 
 //below line sets up the session.
 app.use(session({secret: 'mysupersecret', resave: false, saveUninitialized: false}));
+
+//session needs to be initialised before flash.
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);

@@ -3,3 +3,8 @@
 3. User authentication - passport
 4. To encrypt password - bcrypt-nodejs (refer passport strategies for other login like fb, OAuth)
 5. Flash messages - connect-flash
+6. connect-mongo - session storage in MongoDB
+
+Video - 12 
+1. Need to store user products in session, by default session is stored on Memory, which is not correct due to memory leak.
+2. 

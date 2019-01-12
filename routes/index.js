@@ -39,6 +39,20 @@ router.get('/user/profile', function(req, res, next) {
   res.render('user/profile'); 
 });
 
+router.get('/user/signin', function(req, res, next) {
+  //if possible error messages are present, get them.
+  var messages = req.flash('error');
+  res.render('user/signin', {csrfToken: req.csrfToken(), messages: messages, hasErrors: messages.length > 0}); 
+});
+
+router.post('/user/signin', passport.authenticate('local.signin', {
+  successRedirect: '/user/profile',
+  failureRedirect: '/user/signin',
+  //displays 'email already exists' message using connect-flash package.
+  failureFlash: true
+}));
+
+
 
 
 module.exports = router;

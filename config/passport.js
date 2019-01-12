@@ -59,3 +59,43 @@ passport.use('local.signup', new LocalStrategy({
     });
 
 }));
+
+passport.use('local.signin', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password',
+    passReqToCallback: true
+}, function(req, email, password, done) {
+    //validating email and password using express-validator.
+    req.checkBody('email', 'Invalid email').notEmpty().isEmail();
+    req.checkBody('password', 'Invalid password').notEmpty();
+
+    //To get the errors from the above code thrown by validator.
+    var errors = req.validationErrors();
+    if (errors) {
+        var messages = [];
+        errors.forEach(function(error) {
+            messages.push(error.msg); 
+        });
+
+        //Adding the error messages manually to the flash middleware.
+        return done(null, false, req.flash('error', messages));
+    }
+
+    User.findOne({'email': email}, function(err, user) {
+        //findOne gives an error.
+        if (err) {
+            return done(err);
+        }
+        //findOne retrieves the user.
+        if (!user) {
+            return done(null, false, {message: 'Invalid email.'});
+        }
+        if(!user.validatePassword(password)) {
+            return done(null, false, {message: 'Wrong password.'});
+        }
+        //else no error and user does exist in th database and password is correct.
+
+        return done(null, user);
+        
+    });
+}));
